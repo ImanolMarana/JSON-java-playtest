@@ -344,56 +344,67 @@ public class XMLTokener extends JSONTokener {
     // even though ours does not have that method, to have API compatibility, our method in the subclass
     // should match.
     public void skipPast(String to) {
+        boolean b;
+        char c;
+        int i;
+        int j;
         int offset = 0;
         int length = to.length();
         char[] circle = new char[length];
 
-        // First fill the circle buffer with as many characters as are in the
-        // to string. If we reach an early end, bail.
+        /*
+         * First fill the circle buffer with as many characters as are in the
+         * to string. If we reach an early end, bail.
+         */
 
-        for (int i = 0; i < length; i += 1) {
-          char c = next();
-          if (c == 0) {
-            return;
-          }
-          circle[i] = c;
+        for (i = 0; i < length; i += 1) {
+            c = next();
+            if (c == 0) {
+                return;
+            }
+            circle[i] = c;
         }
 
-        // We will loop, possibly for all of the remaining characters.
+        /* We will loop, possibly for all of the remaining characters. */
+
         for (;;) {
-          int j = offset;
-          boolean b = true;
+            j = offset;
+            b = true;
 
-          // Compare the circle buffer with the to string.
-          for (int i = 0; i < length; i += 1) {
-            if (circle[j] != to.charAt(i)) {
-              b = false;
-              break;
+            /* Compare the circle buffer with the to string. */
+
+            for (i = 0; i < length; i += 1) {
+                if (circle[j] != to.charAt(i)) {
+                    b = false;
+                    break;
+                }
+                j += 1;
+                if (j >= length) {
+                    j -= length;
+                }
             }
-            j += 1;
-            if (j >= length) {
-              j -= length;
+
+            /* If we exit the loop with b intact, then victory is ours. */
+
+            if (b) {
+                return;
             }
-          }
 
-          // If we exit the loop with b intact, then victory is ours.
-          if (b) {
-            return;
-          }
+            /* Get the next character. If there isn't one, then defeat is ours. */
 
-          // Get the next character. If there isn't one, then defeat is ours.
-          char c = next();
-          if (c == 0) {
-            return;
-          }
-          // Shove the character in the circle buffer and advance the
-          // circle offset. The offset is mod n.
-          circle[offset] = c;
-          offset += 1;
-          if (offset >= length) {
-            offset -= length;
-          }
+            c = next();
+            if (c == 0) {
+                return;
+            }
+            /*
+             * Shove the character in the circle buffer and advance the
+             * circle offset. The offset is mod n.
+             */
+            circle[offset] = c;
+            offset += 1;
+            if (offset >= length) {
+                offset -= length;
+            }
         }
-      }
-//Refactoring end
+    }
 }
